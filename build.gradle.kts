@@ -5,6 +5,7 @@ plugins {
     id("java")
     application
     id("com.github.ben-manes.versions") version "0.52.0"
+    id("io.freefair.lombok") version "8.13.1"
 }
 
 application {
@@ -28,11 +29,13 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.12.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
+
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 tasks.test {
     useJUnitPlatform()
-    // https://technology.lastminute.com/junit5-kotlin-and-gradle-dsl/
     testLogging {
         exceptionFormat = TestExceptionFormat.FULL
         events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
