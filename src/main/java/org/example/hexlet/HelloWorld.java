@@ -4,11 +4,14 @@ import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 import io.javalin.http.NotFoundResponse;
+import io.javalin.validation.ValidationException;
 
+import org.example.hexlet.dto.courses.BuildCoursePage;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.dto.users.UsersPage;
+import org.example.hexlet.dto.users.BuildUserPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.model.User;
 import org.example.hexlet.repository.CourseRepository;
@@ -66,16 +69,29 @@ public final class HelloWorld {
 
     private static void addHandlerCoursesAdd(Javalin app) {
         app.get("/courses/build", ctx -> {
-            ctx.render("courses/courseBuild.jte");
+            var page = new BuildCoursePage();
+            ctx.render("courses/courseBuild.jte", model("page", page));
         });
 
         app.post("/courses", ctx -> {
             var name = ctx.formParam("name");
             var description = ctx.formParam("description");
 
-            var course = new Course(name, description);
-            CourseRepository.save(course);
-            ctx.redirect("/courses");
+            try {
+                ctx.formParamAsClass("name", String.class)
+                        .check(value -> value.length() > 2, "Название курса должно быть длиннее 2-х символов")
+                        .get();
+                ctx.formParamAsClass("description", String.class)
+                        .check(value -> value.length() > 10, "Описание курса должно быть длиннее 10-ти символов")
+                        .get();
+
+                var course = new Course(name, description);
+                CourseRepository.save(course);
+                ctx.redirect("/courses");
+            } catch (ValidationException e) {
+                var page = new BuildCoursePage(name, description, e.getErrors());
+                ctx.render("courses/courseBuild.jte", model("page", page));
+            }
         });
 
     }
@@ -114,54 +130,29 @@ public final class HelloWorld {
 
     private static void addHandlerUsersAdd(Javalin app) {
         app.get("/users/build", ctx -> {
-            var user = new User("", "", "");
-            var page = new UserPage(user);
+            var page = new BuildUserPage();
             ctx.render("users/userBuild.jte", model("page", page));
         });
 
         app.post("/users", ctx -> {
             var name = ctx.formParam("name").trim();
             var email = ctx.formParam("email").trim().toLowerCase();
-            var pass = ctx.formParam("password");
-            var passConfirm = ctx.formParam("passwordConfirmation");
 
-            var user = new User(name, email, pass);
-
-            if (isValidUserData(pass, passConfirm)) {
+            try {
+                var passwordConfirmation = ctx.formParam("passwordConfirmation");
+                var password = ctx.formParamAsClass("password", String.class)
+                        .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
+                        .check(value -> value.length() > 6, "У пароля недостаточная длина")
+                        .get();
+                var user = new User(name, email, password);
                 UserRepository.save(user);
                 ctx.redirect("/users");
-            } else {
-                var page = new UserPage(user);
-                String message = getMessageOnErrorSaveUser(pass, passConfirm);
-                message = message + "\n" + "Исправьте данные и повторите регистрацию.";
-                page.setMessageOnErrorSaveUser(message);
-                page.setIsErrorDataRegistration(true);
+            } catch (ValidationException e) {
+                var page = new BuildUserPage(name, email, e.getErrors());
                 ctx.render("users/userBuild.jte", model("page", page));
             }
         });
 
-    }
-
-    private static boolean isValidUserData(String pass, String passConfirm) {
-        if (!pass.equals(passConfirm)) {
-            return false;
-        }
-        if (pass.equals("")) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static String getMessageOnErrorSaveUser(String pass, String passConfirm) {
-        if (!pass.equals(passConfirm)) {
-            return "Подтверждение пароля и пароль не совпадают!";
-        }
-        if (pass.equals("")) {
-            return "Пароль не может быть пустой строкой";
-        }
-
-        return "Неизвестная ошибка";
     }
 
     private static void addHandlerUser(Javalin app) {
