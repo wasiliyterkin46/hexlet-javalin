@@ -9,7 +9,6 @@ import lombok.ToString;
 @ToString
 public final class Course {
     private Long id;
-
     @ToString.Include
     private String name;
     private String description;
