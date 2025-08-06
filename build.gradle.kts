@@ -6,6 +6,7 @@ plugins {
     application
     id("com.github.ben-manes.versions") version "0.52.0"
     id("io.freefair.lombok") version "8.13.1"
+    checkstyle
 }
 
 application {
@@ -25,6 +26,8 @@ dependencies {
     implementation("io.javalin:javalin-rendering:6.7.0")
     implementation("gg.jte:jte:3.2.1")
 
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.12.2")
@@ -32,6 +35,10 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
+}
+
+checkstyle {
+    toolVersion = "10.21.4"
 }
 
 tasks.test {
