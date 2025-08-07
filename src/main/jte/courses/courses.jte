@@ -1,3 +1,4 @@
+@import org.example.hexlet.NamedRoutes
 @import org.example.hexlet.dto.courses.CoursesPage
 @param CoursesPage page
 
@@ -9,14 +10,18 @@
 
         @if(page.getCourses().isEmpty() && page.getCoursesExist())
             <p>Нет курсов, начинающихся на "${page.getTerm()}"</p>
+            <form action="${NamedRoutes.coursesPath()}" method="get">
+               <input type="search" name="term" value="${page.getTerm()}" />
+               <input type="submit" value="Search" />
+           </form>
         @endif
 
-        <form action="/courses/build" method="get">
+        <form action="${NamedRoutes.buildCoursePath()}" method="get">
             <input type="submit" value="New curse" />
         </form>
 
         @if(!page.getCourses().isEmpty())
-            <form action="/courses" method="get">
+            <form action="${NamedRoutes.coursesPath()}" method="get">
                <input type="search" name="term" value="${page.getTerm()}" />
                <input type="submit" value="Search" />
            </form>
@@ -29,7 +34,7 @@
                     </tr>
                     @for(var course : page.getCourses())
                         <tr>
-                            <td><b><a href="/courses/${course.getId()}">${course.getName()}</a></b></td>
+                            <td><b><a href="${NamedRoutes.coursePath(course.getId())}">${course.getName()}</a></b></td>
                             <td><p>${course.getDescription()}</p></td>
                         </tr>
                     @endfor

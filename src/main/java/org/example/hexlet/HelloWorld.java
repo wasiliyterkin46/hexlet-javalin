@@ -43,11 +43,11 @@ public final class HelloWorld {
     }
 
     private static void addHandlerMain(Javalin app) {
-        app.get("/", ctx -> ctx.render("layout/page.jte"));
+        app.get(NamedRoutes.mainPath(), ctx -> ctx.render("layout/page.jte"));
     }
 
     private static void addHandlerCourses(Javalin app) {
-        app.get("/courses", ctx -> {
+        app.get(NamedRoutes.coursesPath(), ctx -> {
             var term = ctx.queryParam("term");
 
             List<Course> courses;
@@ -68,12 +68,12 @@ public final class HelloWorld {
     }
 
     private static void addHandlerCoursesAdd(Javalin app) {
-        app.get("/courses/build", ctx -> {
+        app.get(NamedRoutes.buildCoursePath(), ctx -> {
             var page = new BuildCoursePage();
             ctx.render("courses/courseBuild.jte", model("page", page));
         });
 
-        app.post("/courses", ctx -> {
+        app.post(NamedRoutes.coursesPath(), ctx -> {
             var name = ctx.formParam("name");
             var description = ctx.formParam("description");
 
@@ -90,6 +90,7 @@ public final class HelloWorld {
                 ctx.redirect("/courses");
             } catch (ValidationException e) {
                 var page = new BuildCoursePage(name, description, e.getErrors());
+                ctx.status(422);
                 ctx.render("courses/courseBuild.jte", model("page", page));
             }
         });
@@ -97,7 +98,7 @@ public final class HelloWorld {
     }
 
     private static void addHandlerCourse(Javalin app) {
-        app.get("/courses/{id}", ctx -> {
+        app.get(NamedRoutes.coursesPath() + "/{id}", ctx -> {
             Long id = Long.parseLong(ctx.pathParam("id"));
             var course = CourseRepository.find(id) // Ищем пользователя в базе по id
                     .orElseThrow(() -> new NotFoundResponse("Course with id = " + id + " not found"));
@@ -108,7 +109,7 @@ public final class HelloWorld {
     }
 
     private static void addHandlerUsers(Javalin app) {
-        app.get("/users", ctx -> {
+        app.get(NamedRoutes.usersPath(), ctx -> {
             var term = ctx.queryParam("termName");
 
             List<User> users;
@@ -129,12 +130,12 @@ public final class HelloWorld {
     }
 
     private static void addHandlerUsersAdd(Javalin app) {
-        app.get("/users/build", ctx -> {
+        app.get(NamedRoutes.buildUserPath(), ctx -> {
             var page = new BuildUserPage();
             ctx.render("users/userBuild.jte", model("page", page));
         });
 
-        app.post("/users", ctx -> {
+        app.post(NamedRoutes.usersPath(), ctx -> {
             var name = ctx.formParam("name").trim();
             var email = ctx.formParam("email").trim().toLowerCase();
 
@@ -146,9 +147,10 @@ public final class HelloWorld {
                         .get();
                 var user = new User(name, email, password);
                 UserRepository.save(user);
-                ctx.redirect("/users");
+                ctx.redirect(NamedRoutes.usersPath());
             } catch (ValidationException e) {
                 var page = new BuildUserPage(name, email, e.getErrors());
+                ctx.status(422);
                 ctx.render("users/userBuild.jte", model("page", page));
             }
         });
@@ -156,7 +158,7 @@ public final class HelloWorld {
     }
 
     private static void addHandlerUser(Javalin app) {
-        app.get("/users/{id}", ctx -> {
+        app.get(NamedRoutes.usersPath() + "/{id}", ctx -> {
             Long id = Long.parseLong(ctx.pathParam("id"));
             var user = UserRepository.find(id) // Ищем пользователя в базе по id
                     .orElseThrow(() -> new NotFoundResponse("User with id = " + id + " not found"));
