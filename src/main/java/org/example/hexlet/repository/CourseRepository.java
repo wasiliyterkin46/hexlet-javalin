@@ -11,26 +11,33 @@ public class CourseRepository {
 
     public static void save(Course course) {
         course.setId((long) entities.size() + 1);
-        //user.setCreatedAt(LocalDateTime.now());
         entities.add(course);
     }
 
     public static List<Course> search(String term) {
-        var courses = entities.stream()
+        return entities.stream()
                 .filter(entity -> entity.getName().toLowerCase().startsWith(term.toLowerCase()))
                 .toList();
-        return courses;
     }
 
     public static Optional<Course> find(Long id) {
-        var maybeCourse = entities.stream()
+        return entities.stream()
                 .filter(entity -> entity.getId() == id)
                 .findAny();
-        return maybeCourse;
+    }
+
+    public static Optional<Course> find(String idString) {
+        Long idLong = Long.parseLong(idString);
+        return find(idLong);
     }
 
     public static void delete(Long id) {
         entities.removeIf(course -> course.getId() == id);
+    }
+
+    public static void delete(String idString) {
+        Long idLong = Long.parseLong(idString);
+        delete(idLong);
     }
 
     public static void removeAll() {

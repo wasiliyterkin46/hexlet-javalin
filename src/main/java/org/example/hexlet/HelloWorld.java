@@ -2,22 +2,9 @@ package org.example.hexlet;
 
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
-import static io.javalin.rendering.template.TemplateUtil.model;
-import io.javalin.http.NotFoundResponse;
-import io.javalin.validation.ValidationException;
 
-import org.example.hexlet.dto.courses.BuildCoursePage;
-import org.example.hexlet.dto.courses.CoursePage;
-import org.example.hexlet.dto.courses.CoursesPage;
-import org.example.hexlet.dto.users.UserPage;
-import org.example.hexlet.dto.users.UsersPage;
-import org.example.hexlet.dto.users.BuildUserPage;
-import org.example.hexlet.model.Course;
-import org.example.hexlet.model.User;
-import org.example.hexlet.repository.CourseRepository;
-import org.example.hexlet.repository.UserRepository;
-
-import java.util.List;
+import org.example.hexlet.controller.UsersController;
+import org.example.hexlet.controller.CoursesController;
 
 public final class HelloWorld {
     public static void main(String[] args) {
@@ -31,141 +18,23 @@ public final class HelloWorld {
             config.fileRenderer(new JavalinJte());
         });
 
-        addHandlerMain(app);
-        addHandlerCourses(app);
-        addHandlerCoursesAdd(app);
-        addHandlerCourse(app);
-        addHandlerUsers(app);
-        addHandlerUsersAdd(app);
-        addHandlerUser(app);
+        app.get(NamedRoutes.mainPath(), ctx -> ctx.render("layout/page.jte"));
+        app.get(NamedRoutes.usersPath(), UsersController::index);
+        app.get(NamedRoutes.buildUserPath(), UsersController::build);
+        app.get(NamedRoutes.userPath("{id}"), UsersController::show);
+        app.post(NamedRoutes.usersPath(), UsersController::create);
+        app.get(NamedRoutes.userEdit("{id}"), UsersController::edit);
+        app.post(NamedRoutes.userPath("{id}"), UsersController::update);
+
+        app.get(NamedRoutes.coursesPath(), CoursesController::index);
+        app.get(NamedRoutes.buildCoursePath(), CoursesController::build);
+        app.get(NamedRoutes.coursePath("{id}"), CoursesController::show);
+        app.post(NamedRoutes.coursesPath(), CoursesController::create);
+        app.get(NamedRoutes.courseEdit("{id}"), CoursesController::edit);
+        app.post(NamedRoutes.coursePath("{id}"), CoursesController::update);
 
         return app;
     }
 
-    private static void addHandlerMain(Javalin app) {
-        app.get(NamedRoutes.mainPath(), ctx -> ctx.render("layout/page.jte"));
-    }
-
-    private static void addHandlerCourses(Javalin app) {
-        app.get(NamedRoutes.coursesPath(), ctx -> {
-            var term = ctx.queryParam("term");
-
-            List<Course> courses;
-            String termToPage;
-            if (term != null) {
-                courses = CourseRepository.search(term);
-                termToPage = term;
-            } else {
-                courses = CourseRepository.getEntities();
-                termToPage = "";
-            }
-
-            var coursesExist = !CourseRepository.getEntities().isEmpty();
-            var page = new CoursesPage(courses, termToPage, coursesExist);
-
-            ctx.render("courses/courses.jte", model("page", page));
-        });
-    }
-
-    private static void addHandlerCoursesAdd(Javalin app) {
-        app.get(NamedRoutes.buildCoursePath(), ctx -> {
-            var page = new BuildCoursePage();
-            ctx.render("courses/courseBuild.jte", model("page", page));
-        });
-
-        app.post(NamedRoutes.coursesPath(), ctx -> {
-            var name = ctx.formParam("name");
-            var description = ctx.formParam("description");
-
-            try {
-                ctx.formParamAsClass("name", String.class)
-                        .check(value -> value.length() > 2, "Название курса должно быть длиннее 2-х символов")
-                        .get();
-                ctx.formParamAsClass("description", String.class)
-                        .check(value -> value.length() > 10, "Описание курса должно быть длиннее 10-ти символов")
-                        .get();
-
-                var course = new Course(name, description);
-                CourseRepository.save(course);
-                ctx.redirect("/courses");
-            } catch (ValidationException e) {
-                var page = new BuildCoursePage(name, description, e.getErrors());
-                ctx.status(422);
-                ctx.render("courses/courseBuild.jte", model("page", page));
-            }
-        });
-
-    }
-
-    private static void addHandlerCourse(Javalin app) {
-        app.get(NamedRoutes.coursesPath() + "/{id}", ctx -> {
-            Long id = Long.parseLong(ctx.pathParam("id"));
-            var course = CourseRepository.find(id) // Ищем пользователя в базе по id
-                    .orElseThrow(() -> new NotFoundResponse("Course with id = " + id + " not found"));
-            var page = new CoursePage(course);
-
-            ctx.render("courses/course.jte", model("page", page));
-        });
-    }
-
-    private static void addHandlerUsers(Javalin app) {
-        app.get(NamedRoutes.usersPath(), ctx -> {
-            var term = ctx.queryParam("termName");
-
-            List<User> users;
-            String termToPage;
-            if (term != null) {
-                users = UserRepository.search(term);
-                termToPage = term;
-            } else {
-                users = UserRepository.getEntities();
-                termToPage = "";
-            }
-
-            var usersExist = !UserRepository.getEntities().isEmpty();
-            var page = new UsersPage(users, termToPage, usersExist);
-
-            ctx.render("users/users.jte", model("page", page));
-        });
-    }
-
-    private static void addHandlerUsersAdd(Javalin app) {
-        app.get(NamedRoutes.buildUserPath(), ctx -> {
-            var page = new BuildUserPage();
-            ctx.render("users/userBuild.jte", model("page", page));
-        });
-
-        app.post(NamedRoutes.usersPath(), ctx -> {
-            var name = ctx.formParam("name").trim();
-            var email = ctx.formParam("email").trim().toLowerCase();
-
-            try {
-                var passwordConfirmation = ctx.formParam("passwordConfirmation");
-                var password = ctx.formParamAsClass("password", String.class)
-                        .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
-                        .check(value -> value.length() > 6, "У пароля недостаточная длина")
-                        .get();
-                var user = new User(name, email, password);
-                UserRepository.save(user);
-                ctx.redirect(NamedRoutes.usersPath());
-            } catch (ValidationException e) {
-                var page = new BuildUserPage(name, email, e.getErrors());
-                ctx.status(422);
-                ctx.render("users/userBuild.jte", model("page", page));
-            }
-        });
-
-    }
-
-    private static void addHandlerUser(Javalin app) {
-        app.get(NamedRoutes.usersPath() + "/{id}", ctx -> {
-            Long id = Long.parseLong(ctx.pathParam("id"));
-            var user = UserRepository.find(id) // Ищем пользователя в базе по id
-                    .orElseThrow(() -> new NotFoundResponse("User with id = " + id + " not found"));
-            var page = new UserPage(user);
-
-            ctx.render("users/user.jte", model("page", page));
-        });
-    }
 }
 

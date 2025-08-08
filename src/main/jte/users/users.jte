@@ -12,8 +12,8 @@
             <p>Нет пользователя с именем, начинающимся на "${page.getTermName()}"</p>
             <form action="${NamedRoutes.usersPath()}" method="get">
                 <label>
-                    Введите начало имени для поиска
-                    <input type="search" name="termName" value="${page.getTermName()}" />
+                   Введите начало имени пользователя
+                   <input type="search" name="termName" value="${page.getTermName()}" />
                 </label>
                 <input type="submit" value="Search" />
             </form>
@@ -26,11 +26,11 @@
         @if(!page.getUsers().isEmpty())
             <form action="${NamedRoutes.usersPath()}" method="get">
                 <label>
-                    Введите начало имени для поиска
-                    <input type="search" name="termName" value="${page.getTermName()}" />
+                   Введите начало имени пользователя
+                   <input type="search" name="termName" value="${page.getTermName()}" />
                 </label>
                 <input type="submit" value="Search" />
-           </form>
+            </form>
 
             <div>
                 <table>

@@ -2,9 +2,11 @@
 @param Content user = null
 @param Content users = null
 @param Content userBuild = null
+@param Content userEdit = null
 @param Content course = null
 @param Content courses = null
 @param Content courseBuild = null
+@param Content courseEdit = null
 @param Content title = null
 @param Content headerTemplate = null
 
@@ -42,6 +44,10 @@
             ${userBuild}
         @endif
 
+        @if (userEdit != null)
+            ${userEdit}
+        @endif
+
         @if (course != null)
             ${course}
         @endif
@@ -52,6 +58,10 @@
 
         @if (courseBuild != null)
             ${courseBuild}
+        @endif
+
+        @if (courseEdit != null)
+            ${courseEdit}
         @endif
 
         <div class="footer">

@@ -26,8 +26,18 @@ public class UserRepository {
                 .findAny();
     }
 
+    public static Optional<User> find(String idString) {
+        Long idLong = Long.parseLong(idString);
+        return find(idLong);
+    }
+
     public static void delete(Long id) {
         entities.removeIf(user -> user.getId() == id);
+    }
+
+    public static void delete(String idString) {
+        Long idLong = Long.parseLong(idString);
+        delete(idLong);
     }
 
     public static void removeAll() {

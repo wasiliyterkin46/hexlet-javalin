@@ -11,7 +11,10 @@
         @if(page.getCourses().isEmpty() && page.getCoursesExist())
             <p>Нет курсов, начинающихся на "${page.getTerm()}"</p>
             <form action="${NamedRoutes.coursesPath()}" method="get">
-               <input type="search" name="term" value="${page.getTerm()}" />
+               <label>
+                    Введите начало названия курса
+                    <input type="search" name="term" value="${page.getTerm()}" />
+               </label>
                <input type="submit" value="Search" />
            </form>
         @endif
@@ -22,7 +25,10 @@
 
         @if(!page.getCourses().isEmpty())
             <form action="${NamedRoutes.coursesPath()}" method="get">
-               <input type="search" name="term" value="${page.getTerm()}" />
+               <label>
+                    Введите начало названия курса
+                    <input type="search" name="term" value="${page.getTerm()}" />
+               </label>
                <input type="submit" value="Search" />
            </form>
 
