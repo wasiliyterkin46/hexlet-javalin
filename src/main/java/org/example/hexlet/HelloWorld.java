@@ -5,6 +5,11 @@ import io.javalin.rendering.template.JavalinJte;
 
 import org.example.hexlet.controller.UsersController;
 import org.example.hexlet.controller.CoursesController;
+import org.example.hexlet.dto.MainPage;
+
+import java.time.LocalDateTime;
+
+import static io.javalin.rendering.template.TemplateUtil.model;
 
 public final class HelloWorld {
     public static void main(String[] args) {
@@ -18,7 +23,14 @@ public final class HelloWorld {
             config.fileRenderer(new JavalinJte());
         });
 
-        app.get(NamedRoutes.mainPath(), ctx -> ctx.render("layout/page.jte"));
+        app.before(ctx -> System.out.println(LocalDateTime.now()));
+
+        app.get(NamedRoutes.mainPath(), ctx -> {
+            var visited = Boolean.valueOf(ctx.cookie("visited"));
+            var page = new MainPage(visited);
+            ctx.cookie("visited", String.valueOf(true));
+            ctx.render("layout/page.jte", model("page", page));
+        });
         app.get(NamedRoutes.usersPath(), UsersController::index);
         app.get(NamedRoutes.buildUserPath(), UsersController::build);
         app.get(NamedRoutes.userPath("{id}"), UsersController::show);
