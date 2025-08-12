@@ -1,6 +1,6 @@
 @import gg.jte.Content
-@import org.example.hexlet.dto.MainPage
 
+@param Content index = null
 @param Content user = null
 @param Content users = null
 @param Content userBuild = null
@@ -11,8 +11,7 @@
 @param Content courseEdit = null
 @param Content title = null
 @param Content headerTemplate = null
-
-@param MainPage page
+@param Content logging = null
 
 <!doctype html>
 <html lang="ru">
@@ -23,10 +22,6 @@
     </head>
 
     <body>
-        @if(!page.isVisited())
-            Это сообщение показывается только один раз. Если вы хотите увидеть его снова, сотрите куки
-        @endif
-
         <header>
             @if(headerTemplate != null)
                 ${headerTemplate}
@@ -35,9 +30,12 @@
             @endif
         </header>
 
-        @if(headerTemplate == null)
-            <h3><a href="/courses">Курсы</a></h3>
-            <h3><a href="/users">Пользователи</a></h3>
+        @if (index != null)
+            ${index}
+        @endif
+
+        @if (logging != null)
+            ${logging}
         @endif
 
         @if (user != null)

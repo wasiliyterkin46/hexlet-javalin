@@ -28,6 +28,8 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3:3.18.0")
 
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.12.2")
@@ -35,6 +37,8 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
+
+
 }
 
 checkstyle {
