@@ -20,13 +20,13 @@
                 Чтобы разлогиниться, удалите куку JSESSIONID из браузера
             </p>
             <div>
-                <form action="/sessions" method="post">
+                <form action="${NamedRoutes.deleteSessionsPath()}" method="post">
                     <input type="hidden" name="_delete" value="true"/>
                     <input type="submit" value="Разлогиниться" />
                 </form>
             </div>
         @else
-            <form action="/sessions/built" method="get">
+            <form action="${NamedRoutes.builtSessionsPath()}" method="get">
                 <input type="submit" value="Залогиниться" />
             </form>
         @endif

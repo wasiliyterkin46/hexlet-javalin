@@ -28,12 +28,18 @@ public final class HelloWorld {
 
         addLoggingTimeRequest(app);
         addHandlers(app);
+        clearAllCookie(app);
 
         return app;
     }
 
     private static Javalin addLoggingTimeRequest(Javalin app) {
         app.before(ctx -> System.out.println(LocalDateTime.now()));
+        return app;
+    }
+
+    private static Javalin clearAllCookie(Javalin app) {
+        app.after(NamedRoutes.deleteSessionsPath(), ctx -> ctx.removeCookie("visited", "/"));
         return app;
     }
 
@@ -68,7 +74,8 @@ public final class HelloWorld {
         app.post(NamedRoutes.coursePath("{id}"), CoursesController::update);
 
         app.get(NamedRoutes.builtSessionsPath(), SessionsController::built);
-        app.post(NamedRoutes.sessionsPath(), SessionsController::createOrDestroy);
+        app.post(NamedRoutes.createSessionsPath(), SessionsController::create);
+        app.post(NamedRoutes.deleteSessionsPath(), SessionsController::destroy);
 
         return app;
     }

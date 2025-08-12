@@ -58,11 +58,15 @@ public class NamedRoutes {
         return courseEdit(idString);
     }
 
-    public static String sessionsPath() {
-        return "/sessions";
+    public static String createSessionsPath() {
+        return "/sessions/create";
     }
 
     public static String builtSessionsPath() {
         return "/sessions/built";
+    }
+
+    public static String deleteSessionsPath() {
+        return "/sessions/delete";
     }
 }

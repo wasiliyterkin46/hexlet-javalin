@@ -1,6 +1,7 @@
 package org.example.hexlet.controller;
 
 import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
 import org.example.hexlet.dto.sessions.AuthorizationPage;
 
 import java.util.Optional;
@@ -12,13 +13,17 @@ public class SessionsController {
         ctx.render("sessions/built.jte");
     }
 
-    public static void createOrDestroy(Context ctx) {
+    public static void create(Context ctx) {
+        var nickname = ctx.formParam("nickname");
+        ctx.sessionAttribute("currentUser", String.valueOf(nickname));
+
+        ctx.redirect("/");
+    }
+
+    public static void destroy(Context ctx) {
         Boolean sessionMustBeDestroyed = ctx.formParamAsClass("_delete", Boolean.class).getOrDefault(false);
         if (sessionMustBeDestroyed) {
             ctx.removeCookie("JSESSIONID", "/");
-        } else {
-            var nickname = ctx.formParam("nickname");
-            ctx.sessionAttribute("currentUser", String.valueOf(nickname));
         }
 
         ctx.redirect("/");

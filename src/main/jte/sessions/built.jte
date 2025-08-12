@@ -2,7 +2,7 @@
 
 @template.layout.page(
     logging = @`
-        <form action="${NamedRoutes.sessionsPath()}" method="post">
+        <form action="${NamedRoutes.createSessionsPath()}" method="post">
           <input type="text" placeholder="Nickname" name="nickname" />
           <input type="password" placeholder="Password" name="password" />
           <input type="submit" />
