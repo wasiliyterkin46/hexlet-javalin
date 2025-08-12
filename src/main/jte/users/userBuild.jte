@@ -3,17 +3,20 @@
 @param BuildUserPage page
 
 @template.layout.page(
-    userBuild = @`
+    content = @`
         @if(page.getErrors() != null)
-              <h3>Ошибки регистрации пользователя</h3>
-              <ul>
-                  @for(var validator : page.getErrors().values())
-                      @for(var error : validator)
-                          <li>${error.getMessage()}</li>
-                      @endfor
+            <div class="alert alert-danger">
+                Не удалось зарегистрировать пользователя
+            </div>
+            <h3>Ошибки регистрации пользователя</h3>
+            <ul>
+              @for(var validator : page.getErrors().values())
+                  @for(var error : validator)
+                      <li>${error.getMessage()}</li>
                   @endfor
-              </ul>
-          @endif
+              @endfor
+            </ul>
+        @endif
 
           <form action="${NamedRoutes.usersPath()}" method="post">
             <div>

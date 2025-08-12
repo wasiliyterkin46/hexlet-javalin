@@ -1,12 +1,6 @@
 package org.example.hexlet.controller;
 
 import io.javalin.http.Context;
-import io.javalin.http.NotFoundResponse;
-import org.example.hexlet.dto.sessions.AuthorizationPage;
-
-import java.util.Optional;
-
-import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class SessionsController {
     public static void built(Context ctx) {

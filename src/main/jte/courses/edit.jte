@@ -3,7 +3,7 @@
 @param EditCoursePage page
 
 @template.layout.page(
-    courseEdit = @`
+    content = @`
         @if(page.getErrors() != null)
               <h3>Ошибки обновления курса</h3>
               <ul>

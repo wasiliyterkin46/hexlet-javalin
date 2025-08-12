@@ -3,7 +3,13 @@
 @param UsersPage page
 
 @template.layout.page(
-    users = @`
+    content = @`
+        @if(page.getFlashMessage() != null)
+            <div class="alert alert-success">
+                Пользователь успешно зарегистрирован
+            </div>
+        @endif
+
         @if(!page.getUsersExist())
             <p>Пока не добавлено ни одного пользователя</p>
         @endif

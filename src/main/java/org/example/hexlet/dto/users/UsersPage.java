@@ -12,4 +12,5 @@ public class UsersPage {
     private List<User> users;
     private String termName;
     private Boolean usersExist;
+    private String flashMessage;
 }

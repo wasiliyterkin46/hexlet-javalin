@@ -3,7 +3,7 @@
 @param CoursesPage page
 
 @template.layout.page(
-    courses = @`
+    content = @`
         @if(!page.getCoursesExist())
             <p>Пока не добавлено ни одного курса</p>
         @endif

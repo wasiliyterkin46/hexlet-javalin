@@ -6,7 +6,7 @@
 @param AuthorizationPage authorizationPage
 
 @template.layout.page(
-    index = @`
+    content = @`
         <h3><a href="/courses">Курсы</a></h3>
         <h3><a href="/users">Пользователи</a></h3>
 

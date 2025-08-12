@@ -3,7 +3,7 @@
 @param BuildCoursePage page
 
 @template.layout.page(
-    courseBuild = @`
+    content = @`
         @if(page.getErrors() != null)
               <h3>Ошибки создания курса</h3>
               <ul>

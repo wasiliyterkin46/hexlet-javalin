@@ -3,7 +3,7 @@
 @param EditUserPage page
 
 @template.layout.page(
-    userEdit = @`
+    content = @`
         @if(page.getErrors() != null)
               <h3>Ошибки обновления пользователя</h3>
               <ul>
