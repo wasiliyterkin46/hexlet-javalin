@@ -14,10 +14,11 @@ import org.example.hexlet.repository.UserRepository;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class UsersController {
-    public static void index(Context ctx) {
+    public static void index(Context ctx) throws SQLException {
         var term = ctx.queryParam("termName");
 
         List<User> users;
@@ -36,7 +37,7 @@ public class UsersController {
         ctx.render("users/users.jte", model("page", page));
     }
 
-    public static void show(Context ctx) {
+    public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParam("id");
         var user = UserRepository.find(id) // Ищем пользователя в базе по id
                 .orElseThrow(() -> new NotFoundResponse("User with id = " + id + " not found"));
@@ -50,7 +51,7 @@ public class UsersController {
         ctx.render("users/userBuild.jte", model("page", page));
     }
 
-    public static void create(Context ctx) {
+    public static void create(Context ctx) throws SQLException {
         String toDeleteUser = ctx.formParam("_delete");
         if (toDeleteUser == null) {
             var name = ctx.formParam("name").trim();
@@ -78,7 +79,7 @@ public class UsersController {
         }
     }
 
-    public static void edit(Context ctx) {
+    public static void edit(Context ctx) throws SQLException {
         var id = ctx.pathParam("id");
         var user = UserRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
@@ -86,7 +87,7 @@ public class UsersController {
         ctx.render("users/edit.jte", model("page", page));
     }
 
-    public static void update(Context ctx) {
+    public static void update(Context ctx) throws SQLException {
         var id = ctx.pathParam("id");
         var name = ctx.formParam("name");
         var email = ctx.formParam("email");
@@ -104,6 +105,7 @@ public class UsersController {
             user.setName(name);
             user.setEmail(email);
             user.setPassword(password);
+            UserRepository.update(user);
             ctx.redirect(NamedRoutes.userPath(id));
         } catch (ValidationException e) {
             User user = new User(name, email, password);

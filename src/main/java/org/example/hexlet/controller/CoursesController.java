@@ -14,10 +14,11 @@ import org.example.hexlet.repository.CourseRepository;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
+import java.sql.SQLException;
 import java.util.List;
 
-public class CoursesController {
-    public static void index(Context ctx) {
+public class CoursesController  {
+    public static void index(Context ctx) throws SQLException {
         var term = ctx.queryParam("term");
 
         List<Course> courses;
@@ -34,7 +35,7 @@ public class CoursesController {
         ctx.render("courses/courses.jte", model("page", page));
     }
 
-    public static void show(Context ctx) {
+    public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParam("id");
         var course = CourseRepository.find(id) // Ищем пользователя в базе по id
                 .orElseThrow(() -> new NotFoundResponse("Course with id = " + id + " not found"));
@@ -48,7 +49,7 @@ public class CoursesController {
         ctx.render("courses/courseBuild.jte", model("page", page));
     }
 
-    public static void create(Context ctx) {
+    public static void create(Context ctx) throws SQLException {
         String toDeleteCourse = ctx.formParam("_delete");
         if (toDeleteCourse == null) {
             var name = ctx.formParam("name");
@@ -77,7 +78,7 @@ public class CoursesController {
         }
     }
 
-    public static void edit(Context ctx) {
+    public static void edit(Context ctx) throws SQLException {
         var id = ctx.pathParam("id");
         var course = CourseRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
@@ -85,7 +86,7 @@ public class CoursesController {
         ctx.render("courses/edit.jte", model("page", page));
     }
 
-    public static void update(Context ctx) {
+    public static void update(Context ctx) throws SQLException {
         var id = ctx.pathParam("id");
         var name = ctx.formParam("name");
         var description = ctx.formParam("description");
@@ -102,6 +103,7 @@ public class CoursesController {
                     .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
             course.setName(name);
             course.setDescription(description);
+            CourseRepository.update(course);
             ctx.redirect(NamedRoutes.coursePath(id));
         } catch (ValidationException e) {
             Course course = new Course(name, description);

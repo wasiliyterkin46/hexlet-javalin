@@ -15,7 +15,7 @@
 
     <body>
         @if(flashMessage != null)
-                ${flashMessage}
+            ${flashMessage}
         @endif
 
         <header>

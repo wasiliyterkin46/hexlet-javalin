@@ -9,10 +9,18 @@ import org.example.hexlet.controller.CoursesController;
 import org.example.hexlet.dto.main.VisitPage;
 import org.example.hexlet.dto.sessions.AuthorizationPage;
 import org.example.hexlet.util.NamedRoutes;
+import org.example.hexlet.repository.BaseRepository;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 public final class HelloWorld {
     public static void main(String[] args) {
@@ -21,6 +29,26 @@ public final class HelloWorld {
     }
 
     private static Javalin getApp() {
+        var hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+
+        var dataSource = new HikariDataSource(hikariConfig);
+        BaseRepository.setDataSource(dataSource);
+
+        // Получаем путь до файла в src/main/resources
+        var url = HelloWorld.class.getClassLoader().getResourceAsStream("schema.sql");
+        var sql = new BufferedReader(new InputStreamReader(url))
+                .lines().collect(Collectors.joining("\n"));
+
+        // Получаем соединение, создаем стейтмент и выполняем запрос
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte());

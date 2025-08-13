@@ -5,7 +5,7 @@
 @template.layout.page(
     content = @`
         @if(page.getFlashMessage() != null)
-            <div class="alert alert-success">
+            <div class="alert alert-success" role="alert">
                 Пользователь успешно зарегистрирован
             </div>
         @endif

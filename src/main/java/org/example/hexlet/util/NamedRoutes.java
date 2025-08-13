@@ -32,6 +32,14 @@ public class NamedRoutes {
         return userEdit(idString);
     }
 
+    public static String userDelete() {
+        return "/users/delete";
+    }
+
+    public static String courseDelete() {
+        return "/courses/delete";
+    }
+
     public static String coursesPath() {
         return "/courses";
     }
