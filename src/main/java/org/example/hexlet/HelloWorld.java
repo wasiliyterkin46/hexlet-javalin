@@ -30,7 +30,7 @@ public final class HelloWorld {
 
     private static Javalin getApp() {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl(getDatabaseUrl());
 
         var dataSource = new HikariDataSource(hikariConfig);
         BaseRepository.setDataSource(dataSource);
@@ -107,5 +107,12 @@ public final class HelloWorld {
 
         return app;
     }
+
+    private static String getDatabaseUrl() {
+        // Получаем url базы данных из переменной окружения DATABASE_URL
+        // Если она не установлена, используем базу в памяти
+        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+    }
+
 }
 
